@@ -106,7 +106,7 @@ class ListPageState extends State<ListPage> {
       _listKey.currentState?.removeItem(
         index,
         (context, animation) =>
-            _buildAnimatedListCard(context, removed, false, animation),
+            _buildAnimatedListCard(context, removed, false, animation, false),
         duration: const Duration(milliseconds: 200),
       );
     }
@@ -139,7 +139,6 @@ class ListPageState extends State<ListPage> {
       _sortLists();
     });
   }
-
 
   void _sortLists() {
     widget.lists.sort((a, b) {
@@ -189,8 +188,13 @@ class ListPageState extends State<ListPage> {
       final removedList = widget.lists.removeAt(index);
       _listKey.currentState?.removeItem(
         index,
-        (context, animation) =>
-            _buildAnimatedListCard(context, removedList, false, animation),
+        (context, animation) => _buildAnimatedListCard(
+          context,
+          removedList,
+          false,
+          animation,
+          false,
+        ),
         duration: const Duration(milliseconds: 200),
       );
     }
@@ -216,12 +220,18 @@ class ListPageState extends State<ListPage> {
 
     for (final index in indices) {
       final removedList = widget.lists.removeAt(index);
+      removedList.isPinned = false;
       removedList.archivedAt = DateTime.now();
       archived.insert(0, removedList);
       _listKey.currentState?.removeItem(
         index,
-        (context, animation) =>
-            _buildAnimatedListCard(context, removedList, false, animation),
+        (context, animation) => _buildAnimatedListCard(
+          context,
+          removedList,
+          false,
+          animation,
+          false,
+        ),
         duration: const Duration(milliseconds: 200),
       );
     }
@@ -231,7 +241,27 @@ class ListPageState extends State<ListPage> {
     widget.onSelectionChanged(false);
   }
 
-  Widget _buildListCard(BuildContext context, AppList list, bool isSelected) {
+  Widget _buildPinnedIconBadge(BuildContext context, ColorScheme colorScheme) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: colorScheme.tertiaryContainer,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        Icons.push_pin,
+        size: 12,
+        color: colorScheme.onTertiaryContainer,
+      ),
+    );
+  }
+
+  Widget _buildListCard(
+    BuildContext context,
+    AppList list,
+    bool isSelected,
+    bool useGridView,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final contentPadding = EdgeInsets.all(12);
@@ -295,11 +325,16 @@ class ListPageState extends State<ListPage> {
                                   ),
                                   if (list.isPinned) ...[
                                     const SizedBox(width: 8),
-                                    _buildPinnedBadge(
-                                      context,
-                                      textTheme,
-                                      colorScheme,
-                                    ),
+                                    useGridView
+                                        ? _buildPinnedIconBadge(
+                                            context,
+                                            colorScheme,
+                                          )
+                                        : _buildPinnedBadge(
+                                            context,
+                                            textTheme,
+                                            colorScheme,
+                                          ),
                                   ],
                                 ],
                               ),
@@ -369,12 +404,13 @@ class ListPageState extends State<ListPage> {
     AppList list,
     bool isSelected,
     Animation<double> animation,
+    bool useGridView,
   ) {
     return FadeTransition(
       opacity: animation,
       child: SizeTransition(
         sizeFactor: animation,
-        child: _buildListCard(context, list, isSelected),
+        child: _buildListCard(context, list, isSelected, useGridView),
       ),
     );
   }
@@ -430,7 +466,7 @@ class ListPageState extends State<ListPage> {
         : widget.title;
     final listPadding = EdgeInsets.all(12);
     final itemGap = 6.0;
-    final gridSpacing = 10.0;
+    final gridSpacing = 5.0;
     return CustomScrollView(
       slivers: [
         SliverAppBar(
@@ -506,6 +542,7 @@ class ListPageState extends State<ListPage> {
                       list,
                       isSelected,
                       animation,
+                      widget.useGridView,
                     ),
                     if (!isLast) SizedBox(height: itemGap),
                   ],
@@ -521,7 +558,12 @@ class ListPageState extends State<ListPage> {
               delegate: SliverChildBuilderDelegate((context, index) {
                 final list = widget.lists[index];
                 final isSelected = _selectedLists.contains(list);
-                return _buildListCard(context, list, isSelected);
+                return _buildListCard(
+                  context,
+                  list,
+                  isSelected,
+                  widget.useGridView,
+                );
               }, childCount: widget.lists.length),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,

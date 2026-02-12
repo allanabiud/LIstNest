@@ -30,9 +30,7 @@ class _ArchivePageState extends State<ArchivePage> {
 
   bool get _isSelectionMode => _selectedLists.isNotEmpty;
   int get _selectedCount => _selectedLists.length;
-  bool get _areAllSelectedPinned =>
-      _selectedLists.isNotEmpty &&
-      _selectedLists.every((list) => list.isPinned);
+
 
   @override
   void initState() {
@@ -64,6 +62,14 @@ class _ArchivePageState extends State<ArchivePage> {
     }
     setState(() {
       _selectedLists.clear();
+    });
+  }
+
+  void _selectAllLists() {
+    setState(() {
+      _selectedLists
+        ..clear()
+        ..addAll(widget.archivedLists);
     });
   }
 
@@ -125,56 +131,7 @@ class _ArchivePageState extends State<ArchivePage> {
     widget.onUnarchiveLists(lists);
   }
 
-  void _togglePinSelectedLists() {
-    if (_selectedLists.isEmpty) {
-      return;
-    }
-    final shouldPin = !_areAllSelectedPinned;
-    final selected = _selectedLists.toList();
-    final removalIndices =
-        selected
-            .map(widget.archivedLists.indexOf)
-            .where((index) => index != -1)
-            .toList()
-          ..sort((a, b) => b.compareTo(a));
 
-    setState(() {
-      _selectedLists.clear();
-    });
-
-    final removedItems = <AppList>[];
-    for (final index in removalIndices) {
-      final removed = widget.archivedLists.removeAt(index);
-      removedItems.add(removed);
-      _listKey.currentState?.removeItem(
-        index,
-        (context, animation) =>
-            _buildAnimatedArchivedCard(context, removed, false, animation),
-        duration: const Duration(milliseconds: 200),
-      );
-    }
-
-    _captureOriginalOrder();
-    for (final list in removedItems) {
-      list.isPinned = shouldPin;
-    }
-    widget.archivedLists.addAll(removedItems);
-    _sortArchivedLists();
-
-    final insertionIndices =
-        removedItems
-            .map(widget.archivedLists.indexOf)
-            .where((index) => index != -1)
-            .toList()
-          ..sort();
-    for (final index in insertionIndices) {
-      _listKey.currentState?.insertItem(
-        index,
-        duration: const Duration(milliseconds: 200),
-      );
-    }
-    widget.onArchiveUpdated();
-  }
 
   void _sortArchivedLists() {
     widget.archivedLists.sort((a, b) {
@@ -192,6 +149,8 @@ class _ArchivePageState extends State<ArchivePage> {
       _originalOrder.putIfAbsent(widget.archivedLists[i], () => i);
     }
   }
+
+
 
   Widget _buildArchivedCard(
     BuildContext context,
@@ -389,18 +348,28 @@ class _ArchivePageState extends State<ArchivePage> {
     final textTheme = Theme.of(context).textTheme;
     final titleStyle = textTheme.titleLarge?.copyWith(
       fontWeight: FontWeight.bold,
-      fontSize: 24,
+      fontSize: 20, // Smaller font size
     );
     final titleText = _isSelectionMode
         ? '${_selectedCount == 1 ? '1 list' : '$_selectedCount lists'} selected'
         : 'Archive';
     final listPadding = EdgeInsets.all(12);
     final itemGap = 6.0;
-    final gridSpacing = 10.0;
+    final gridSpacing = 5.0;
+    final titleWidget = _isSelectionMode
+        ? Text(titleText, style: titleStyle)
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.archive_outlined, size: 24), // Archive icon
+              SizedBox(width: 8),
+              Text(titleText, style: titleStyle),
+            ],
+          );
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(titleText, style: titleStyle),
+        title: titleWidget,
         leading: _isSelectionMode
             ? AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
@@ -421,6 +390,28 @@ class _ArchivePageState extends State<ArchivePage> {
                 ),
               )
             : null,
+        actions: [
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            transitionBuilder: (child, animation) {
+              final curved = CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutBack,
+              );
+              return FadeTransition(
+                opacity: animation,
+                child: ScaleTransition(scale: curved, child: child),
+              );
+            },
+            child: _isSelectionMode
+                ? IconButton(
+                    key: const ValueKey<String>('selectAll'),
+                    icon: const Icon(Icons.select_all),
+                    onPressed: _selectAllLists,
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
       ),
       floatingActionButton: AnimatedSwitcher(
         duration: const Duration(milliseconds: 220),
@@ -446,18 +437,7 @@ class _ArchivePageState extends State<ArchivePage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  FloatingActionButton(
-                    heroTag: 'pinArchivedListsFab',
-                    onPressed: _togglePinSelectedLists,
-                    backgroundColor: colorScheme.tertiaryContainer,
-                    foregroundColor: colorScheme.onTertiaryContainer,
-                    child: Icon(
-                      _areAllSelectedPinned
-                          ? Icons.push_pin
-                          : Icons.push_pin_outlined,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
+
                   FloatingActionButton(
                     heroTag: 'unarchiveListsFab',
                     onPressed: _unarchiveSelectedLists,
@@ -530,8 +510,7 @@ class _ArchivePageState extends State<ArchivePage> {
                     size: 72,
                     color: Theme.of(
                       context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.35),
-                  ),
+                                          ).colorScheme.onSurface.withValues(alpha: 0.35),                  ),
                   const SizedBox(height: 12),
                   Text(
                     'No archived lists',
