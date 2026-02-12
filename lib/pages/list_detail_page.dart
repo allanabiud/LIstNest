@@ -252,7 +252,7 @@ class _ListDetailPageState extends State<ListDetailPage> {
                     Icons.list_alt_outlined,
                     size: 72,
                     color: Theme.of(context).colorScheme.onSurface
-                        .withOpacity(0.35),
+                        .withValues(alpha: 0.35),
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -260,7 +260,7 @@ class _ListDetailPageState extends State<ListDetailPage> {
                     style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onSurface
-                          .withOpacity(0.6),
+                          .withValues(alpha: 0.6),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -268,7 +268,7 @@ class _ListDetailPageState extends State<ListDetailPage> {
                     'Add items to start your list',
                     style: textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurface
-                          .withOpacity(0.5),
+                          .withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -332,7 +332,7 @@ class _ListDetailPageState extends State<ListDetailPage> {
                         ? TextDecoration.lineThrough
                         : TextDecoration.none,
                     color: item.isChecked
-                        ? colorScheme.onSurface.withOpacity(0.55)
+                        ? colorScheme.onSurface.withValues(alpha: 0.55)
                         : colorScheme.onSurface,
                   ),
                 ),

@@ -38,7 +38,8 @@ class ListPageState extends State<ListPage> {
   bool get _isSelectionMode => _selectedLists.isNotEmpty;
   int get _selectedCount => _selectedLists.length;
   bool get _areAllSelectedPinned =>
-      _selectedLists.isNotEmpty && _selectedLists.every((list) => list.isPinned);
+      _selectedLists.isNotEmpty &&
+      _selectedLists.every((list) => list.isPinned);
 
   @override
   void initState() {
@@ -87,11 +88,12 @@ class ListPageState extends State<ListPage> {
     }
     final shouldPin = !_areAllSelectedPinned;
     final selected = _selectedLists.toList();
-    final removalIndices = selected
-        .map(widget.lists.indexOf)
-        .where((index) => index != -1)
-        .toList()
-      ..sort((a, b) => b.compareTo(a));
+    final removalIndices =
+        selected
+            .map(widget.lists.indexOf)
+            .where((index) => index != -1)
+            .toList()
+          ..sort((a, b) => b.compareTo(a));
 
     setState(() {
       _selectedLists.clear();
@@ -103,12 +105,8 @@ class ListPageState extends State<ListPage> {
       removedItems.add(removed);
       _listKey.currentState?.removeItem(
         index,
-        (context, animation) => _buildAnimatedListCard(
-          context,
-          removed,
-          false,
-          animation,
-        ),
+        (context, animation) =>
+            _buildAnimatedListCard(context, removed, false, animation),
         duration: const Duration(milliseconds: 200),
       );
     }
@@ -120,11 +118,12 @@ class ListPageState extends State<ListPage> {
     widget.lists.addAll(removedItems);
     _sortLists();
 
-    final insertionIndices = removedItems
-        .map(widget.lists.indexOf)
-        .where((index) => index != -1)
-        .toList()
-      ..sort();
+    final insertionIndices =
+        removedItems
+            .map(widget.lists.indexOf)
+            .where((index) => index != -1)
+            .toList()
+          ..sort();
     for (final index in insertionIndices) {
       _listKey.currentState?.insertItem(
         index,
@@ -174,11 +173,12 @@ class ListPageState extends State<ListPage> {
     if (_selectedLists.isEmpty) {
       return;
     }
-    final indices = _selectedLists
-        .map(widget.lists.indexOf)
-        .where((index) => index != -1)
-        .toList()
-      ..sort((a, b) => b.compareTo(a));
+    final indices =
+        _selectedLists
+            .map(widget.lists.indexOf)
+            .where((index) => index != -1)
+            .toList()
+          ..sort((a, b) => b.compareTo(a));
 
     setState(() {
       _selectedLists.clear();
@@ -188,12 +188,8 @@ class ListPageState extends State<ListPage> {
       final removedList = widget.lists.removeAt(index);
       _listKey.currentState?.removeItem(
         index,
-        (context, animation) => _buildAnimatedListCard(
-          context,
-          removedList,
-          false,
-          animation,
-        ),
+        (context, animation) =>
+            _buildAnimatedListCard(context, removedList, false, animation),
         duration: const Duration(milliseconds: 200),
       );
     }
@@ -205,11 +201,12 @@ class ListPageState extends State<ListPage> {
     if (_selectedLists.isEmpty) {
       return;
     }
-    final indices = _selectedLists
-        .map(widget.lists.indexOf)
-        .where((index) => index != -1)
-        .toList()
-      ..sort((a, b) => b.compareTo(a));
+    final indices =
+        _selectedLists
+            .map(widget.lists.indexOf)
+            .where((index) => index != -1)
+            .toList()
+          ..sort((a, b) => b.compareTo(a));
 
     final archived = <AppList>[];
     setState(() {
@@ -222,12 +219,8 @@ class ListPageState extends State<ListPage> {
       archived.insert(0, removedList);
       _listKey.currentState?.removeItem(
         index,
-        (context, animation) => _buildAnimatedListCard(
-          context,
-          removedList,
-          false,
-          animation,
-        ),
+        (context, animation) =>
+            _buildAnimatedListCard(context, removedList, false, animation),
         duration: const Duration(milliseconds: 200),
       );
     }
@@ -237,18 +230,11 @@ class ListPageState extends State<ListPage> {
     widget.onSelectionChanged(false);
   }
 
-  Widget _buildListCard(
-    BuildContext context,
-    AppList list,
-    bool isSelected,
-  ) {
+  Widget _buildListCard(BuildContext context, AppList list, bool isSelected) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    const isCompact = true;
-    final contentPadding = EdgeInsets.all(isCompact ? 12 : 16);
-    final metaSpacing = isCompact ? 4.0 : 6.0;
-    final timestampSpacing = isCompact ? 6.0 : 8.0;
-
+    final contentPadding = EdgeInsets.all(12);
+    final timestampSpacing = 6.0;
     return AnimatedScale(
       scale: isSelected ? 0.94 : 1.0,
       duration: const Duration(milliseconds: 120),
@@ -265,10 +251,7 @@ class ListPageState extends State<ListPage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: isSelected
-                      ? BorderSide(
-                          color: colorScheme.primary,
-                          width: 2,
-                        )
+                      ? BorderSide(color: colorScheme.primary, width: 2)
                       : BorderSide.none,
                 ),
                 child: InkWell(
@@ -294,92 +277,61 @@ class ListPageState extends State<ListPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (isCompact)
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Row(
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        list.name,
-                                        style: textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              colorScheme.onSecondaryContainer,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      list.name,
+                                      style: textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: colorScheme.onSecondaryContainer,
                                       ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    if (list.isPinned) ...[
-                                      const SizedBox(width: 8),
-                                      _buildPinnedBadge(
-                                        context,
-                                        textTheme,
-                                        colorScheme,
-                                      ),
-                                    ],
+                                  ),
+                                  if (list.isPinned) ...[
+                                    const SizedBox(width: 8),
+                                    _buildPinnedBadge(
+                                      context,
+                                      textTheme,
+                                      colorScheme,
+                                    ),
                                   ],
-                                ),
+                                ],
                               ),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.secondary.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                child: Text(
-                                  '${list.items.length}',
-                                  style: textTheme.labelSmall?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: colorScheme.onSecondaryContainer,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        else ...[
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  list.name,
-                                  style: textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: colorScheme.onSecondaryContainer,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              if (list.isPinned) ...[
-                                const SizedBox(width: 8),
-                                _buildPinnedBadge(
-                                  context,
-                                  textTheme,
-                                  colorScheme,
-                                ),
-                              ],
-                            ],
-                          ),
-                          SizedBox(height: metaSpacing),
-                          Text(
-                            '${list.items.length} items',
-                            style: textTheme.labelMedium?.copyWith(
-                              color: colorScheme.onSecondaryContainer
-                                  .withOpacity(0.85),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.secondary.withValues(
+                                  alpha: 0.2,
+                                ),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                '${list.items.length}',
+                                style: textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: colorScheme.onSecondaryContainer,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         SizedBox(height: timestampSpacing),
                         Text(
                           'Created ${_formatDateTime(list.createdAt)}',
                           style: textTheme.labelMedium?.copyWith(
-                            color: colorScheme.onSecondaryContainer
-                                .withOpacity(0.7),
+                            color: colorScheme.onSecondaryContainer.withValues(
+                              alpha: 0.7,
+                            ),
                           ),
                         ),
                       ],
@@ -475,10 +427,9 @@ class ListPageState extends State<ListPage> {
     final titleText = _isSelectionMode
         ? '${_selectedCount == 1 ? '1 list' : '$_selectedCount lists'} selected'
         : widget.title;
-    const isCompact = true;
-    final listPadding = EdgeInsets.all(isCompact ? 12 : 16);
-    final itemGap = isCompact ? 6.0 : 10.0;
-    final gridSpacing = isCompact ? 10.0 : 14.0;
+    final listPadding = EdgeInsets.all(12);
+    final itemGap = 6.0;
+    final gridSpacing = 10.0;
     return CustomScrollView(
       slivers: [
         SliverAppBar(
@@ -565,19 +516,16 @@ class ListPageState extends State<ListPage> {
           SliverPadding(
             padding: listPadding,
             sliver: SliverGrid(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final list = widget.lists[index];
-                  final isSelected = _selectedLists.contains(list);
-                  return _buildListCard(context, list, isSelected);
-                },
-                childCount: widget.lists.length,
-              ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final list = widget.lists[index];
+                final isSelected = _selectedLists.contains(list);
+                return _buildListCard(context, list, isSelected);
+              }, childCount: widget.lists.length),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 mainAxisSpacing: gridSpacing,
                 crossAxisSpacing: gridSpacing,
-                childAspectRatio: isCompact ? 1.6 : 1.4,
+                childAspectRatio: 1.6,
               ),
             ),
           ),
@@ -591,25 +539,28 @@ class ListPageState extends State<ListPage> {
                   Icon(
                     Icons.inbox_outlined,
                     size: 72,
-                    color: Theme.of(context).colorScheme.onSurface
-                        .withOpacity(0.35),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.35),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     'No lists yet',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface
-                              .withOpacity(0.6),
-                        ),
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Create one to get started',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface
-                              .withOpacity(0.5),
-                        ),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
                   ),
                 ],
               ),

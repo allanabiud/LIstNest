@@ -25,14 +25,14 @@ class ArchivePage extends StatefulWidget {
 
 class _ArchivePageState extends State<ArchivePage> {
   final Set<AppList> _selectedLists = {};
-  final GlobalKey<AnimatedListState> _listKey =
-      GlobalKey<AnimatedListState>();
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   final Map<AppList, int> _originalOrder = {};
 
   bool get _isSelectionMode => _selectedLists.isNotEmpty;
   int get _selectedCount => _selectedLists.length;
   bool get _areAllSelectedPinned =>
-      _selectedLists.isNotEmpty && _selectedLists.every((list) => list.isPinned);
+      _selectedLists.isNotEmpty &&
+      _selectedLists.every((list) => list.isPinned);
 
   @override
   void initState() {
@@ -71,11 +71,12 @@ class _ArchivePageState extends State<ArchivePage> {
     if (_selectedLists.isEmpty) {
       return;
     }
-    final indices = _selectedLists
-        .map(widget.archivedLists.indexOf)
-        .where((index) => index != -1)
-        .toList()
-      ..sort((a, b) => b.compareTo(a));
+    final indices =
+        _selectedLists
+            .map(widget.archivedLists.indexOf)
+            .where((index) => index != -1)
+            .toList()
+          ..sort((a, b) => b.compareTo(a));
     final lists = <AppList>[];
     setState(() {
       _selectedLists.clear();
@@ -86,12 +87,8 @@ class _ArchivePageState extends State<ArchivePage> {
       lists.insert(0, removedList);
       _listKey.currentState?.removeItem(
         index,
-        (context, animation) => _buildAnimatedArchivedCard(
-          context,
-          removedList,
-          false,
-          animation,
-        ),
+        (context, animation) =>
+            _buildAnimatedArchivedCard(context, removedList, false, animation),
         duration: const Duration(milliseconds: 200),
       );
     }
@@ -103,11 +100,12 @@ class _ArchivePageState extends State<ArchivePage> {
     if (_selectedLists.isEmpty) {
       return;
     }
-    final indices = _selectedLists
-        .map(widget.archivedLists.indexOf)
-        .where((index) => index != -1)
-        .toList()
-      ..sort((a, b) => b.compareTo(a));
+    final indices =
+        _selectedLists
+            .map(widget.archivedLists.indexOf)
+            .where((index) => index != -1)
+            .toList()
+          ..sort((a, b) => b.compareTo(a));
     final lists = <AppList>[];
     setState(() {
       _selectedLists.clear();
@@ -118,12 +116,8 @@ class _ArchivePageState extends State<ArchivePage> {
       lists.insert(0, removedList);
       _listKey.currentState?.removeItem(
         index,
-        (context, animation) => _buildAnimatedArchivedCard(
-          context,
-          removedList,
-          false,
-          animation,
-        ),
+        (context, animation) =>
+            _buildAnimatedArchivedCard(context, removedList, false, animation),
         duration: const Duration(milliseconds: 200),
       );
     }
@@ -137,11 +131,12 @@ class _ArchivePageState extends State<ArchivePage> {
     }
     final shouldPin = !_areAllSelectedPinned;
     final selected = _selectedLists.toList();
-    final removalIndices = selected
-        .map(widget.archivedLists.indexOf)
-        .where((index) => index != -1)
-        .toList()
-      ..sort((a, b) => b.compareTo(a));
+    final removalIndices =
+        selected
+            .map(widget.archivedLists.indexOf)
+            .where((index) => index != -1)
+            .toList()
+          ..sort((a, b) => b.compareTo(a));
 
     setState(() {
       _selectedLists.clear();
@@ -153,12 +148,8 @@ class _ArchivePageState extends State<ArchivePage> {
       removedItems.add(removed);
       _listKey.currentState?.removeItem(
         index,
-        (context, animation) => _buildAnimatedArchivedCard(
-          context,
-          removed,
-          false,
-          animation,
-        ),
+        (context, animation) =>
+            _buildAnimatedArchivedCard(context, removed, false, animation),
         duration: const Duration(milliseconds: 200),
       );
     }
@@ -170,11 +161,12 @@ class _ArchivePageState extends State<ArchivePage> {
     widget.archivedLists.addAll(removedItems);
     _sortArchivedLists();
 
-    final insertionIndices = removedItems
-        .map(widget.archivedLists.indexOf)
-        .where((index) => index != -1)
-        .toList()
-      ..sort();
+    final insertionIndices =
+        removedItems
+            .map(widget.archivedLists.indexOf)
+            .where((index) => index != -1)
+            .toList()
+          ..sort();
     for (final index in insertionIndices) {
       _listKey.currentState?.insertItem(
         index,
@@ -209,11 +201,7 @@ class _ArchivePageState extends State<ArchivePage> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final archivedAt = list.archivedAt ?? list.createdAt;
-    const isCompact = true;
-    final contentPadding = EdgeInsets.all(isCompact ? 12 : 16);
-    final metaSpacing = isCompact ? 4.0 : 6.0;
-    final timestampSpacing = isCompact ? 6.0 : 8.0;
-
+    final contentPadding = EdgeInsets.all(12);
     return AnimatedScale(
       scale: isSelected ? 0.98 : 1.0,
       duration: const Duration(milliseconds: 120),
@@ -230,10 +218,7 @@ class _ArchivePageState extends State<ArchivePage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: isSelected
-                      ? BorderSide(
-                          color: colorScheme.primary,
-                          width: 2,
-                        )
+                      ? BorderSide(color: colorScheme.primary, width: 2)
                       : BorderSide.none,
                 ),
                 child: InkWell(
@@ -257,92 +242,60 @@ class _ArchivePageState extends State<ArchivePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (isCompact)
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Row(
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        list.name,
-                                        style: textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              colorScheme.onSecondaryContainer,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      list.name,
+                                      style: textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: colorScheme.onSecondaryContainer,
                                       ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    if (list.isPinned) ...[
-                                      const SizedBox(width: 8),
-                                      _buildPinnedBadge(
-                                        context,
-                                        textTheme,
-                                        colorScheme,
-                                      ),
-                                    ],
+                                  ),
+                                  if (list.isPinned) ...[
+                                    const SizedBox(width: 8),
+                                    _buildPinnedBadge(
+                                      context,
+                                      textTheme,
+                                      colorScheme,
+                                    ),
                                   ],
-                                ),
+                                ],
                               ),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.secondary.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                child: Text(
-                                  '${list.items.length}',
-                                  style: textTheme.labelSmall?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: colorScheme.onSecondaryContainer,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        else ...[
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  list.name,
-                                  style: textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: colorScheme.onSecondaryContainer,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              if (list.isPinned) ...[
-                                const SizedBox(width: 8),
-                                _buildPinnedBadge(
-                                  context,
-                                  textTheme,
-                                  colorScheme,
-                                ),
-                              ],
-                            ],
-                          ),
-                          SizedBox(height: metaSpacing),
-                          Text(
-                            '${list.items.length} items',
-                            style: textTheme.labelMedium?.copyWith(
-                              color: colorScheme.onSecondaryContainer
-                                  .withOpacity(0.85),
                             ),
-                          ),
-                        ],
-                        SizedBox(height: timestampSpacing),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.secondary.withValues(
+                                  alpha: 0.2,
+                                ),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                '${list.items.length}',
+                                style: textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: colorScheme.onSecondaryContainer,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         Text(
                           'Archived ${_formatDateTime(archivedAt)}',
                           style: textTheme.labelMedium?.copyWith(
-                            color: colorScheme.onSecondaryContainer
-                                .withOpacity(0.7),
+                            color: colorScheme.onSecondaryContainer.withValues(
+                              alpha: 0.7,
+                            ),
                           ),
                         ),
                       ],
@@ -441,11 +394,9 @@ class _ArchivePageState extends State<ArchivePage> {
     final titleText = _isSelectionMode
         ? '${_selectedCount == 1 ? '1 list' : '$_selectedCount lists'} selected'
         : 'Archive';
-    const isCompact = true;
-    final listPadding = EdgeInsets.all(isCompact ? 12 : 16);
-    final itemGap = isCompact ? 6.0 : 10.0;
-    final gridSpacing = isCompact ? 10.0 : 14.0;
-
+    final listPadding = EdgeInsets.all(12);
+    final itemGap = 6.0;
+    final gridSpacing = 10.0;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -486,10 +437,7 @@ class _ArchivePageState extends State<ArchivePage> {
         layoutBuilder: (currentChild, previousChildren) {
           return Stack(
             alignment: Alignment.bottomRight,
-            children: [
-              ...previousChildren,
-              if (currentChild != null) currentChild,
-            ],
+            children: [...previousChildren, ?currentChild],
           );
         },
         child: _isSelectionMode
@@ -540,7 +488,7 @@ class _ArchivePageState extends State<ArchivePage> {
                       crossAxisCount: 2,
                       mainAxisSpacing: gridSpacing,
                       crossAxisSpacing: gridSpacing,
-                      childAspectRatio: isCompact ? 1.6 : 1.4,
+                      childAspectRatio: 1.6,
                     ),
                     itemCount: widget.archivedLists.length,
                     itemBuilder: (context, index) {
@@ -580,24 +528,27 @@ class _ArchivePageState extends State<ArchivePage> {
                   Icon(
                     Icons.archive_outlined,
                     size: 72,
-                    color: Theme.of(context).colorScheme.onSurface
-                        .withOpacity(0.35),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.35),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     'No archived lists',
                     style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface
-                          .withOpacity(0.6),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Archive lists to find them here',
                     style: textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface
-                          .withOpacity(0.5),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],

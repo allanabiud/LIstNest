@@ -116,10 +116,7 @@ class _MyAppState extends State<MyApp> {
         final lightScheme = lightDynamic?.harmonized() ?? lightColorScheme;
         final darkScheme = darkDynamic?.harmonized() ?? darkColorScheme;
 
-        final amoledDarkScheme = darkScheme.copyWith(
-          surface: Colors.black,
-          background: Colors.black,
-        );
+        final amoledDarkScheme = darkScheme.copyWith(surface: Colors.black);
 
         return MaterialApp(
           title: 'ListNest',
@@ -147,11 +144,11 @@ class _MyAppState extends State<MyApp> {
             useMaterial3: true,
             fontFamily: "Rubik",
             pageTransitionsTheme: pageTransitionsTheme,
-            scaffoldBackgroundColor:
-                _useAmoledDark ? Colors.black : null,
+            scaffoldBackgroundColor: _useAmoledDark ? Colors.black : null,
             navigationBarTheme: NavigationBarThemeData(
-              backgroundColor:
-                  _useAmoledDark ? Colors.black : darkScheme.surface,
+              backgroundColor: _useAmoledDark
+                  ? Colors.black
+                  : darkScheme.surface,
               indicatorColor: darkScheme.secondaryContainer,
               elevation: 1,
               height: 70,
@@ -202,8 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<AppList> _activeLists = [];
   final List<AppList> _archivedLists = [];
   final TextEditingController _textFieldController = TextEditingController();
-    final GlobalKey<ListPageState> _listPageKey =
-      GlobalKey<ListPageState>();
+  final GlobalKey<ListPageState> _listPageKey = GlobalKey<ListPageState>();
   bool _isListSelectionMode = false;
   bool _useGridView = false;
   static const String _listsKey = 'lists_active';
@@ -255,10 +251,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _persistLists() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_listsKey, _encodeLists(_activeLists));
-    await prefs.setString(
-      _archivedListsKey,
-      _encodeLists(_archivedLists),
-    );
+    await prefs.setString(_archivedListsKey, _encodeLists(_archivedLists));
   }
 
   List<AppList> _decodeLists(String? encoded) {
@@ -271,7 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
         .toList();
   }
 
-      String _encodeLists(List<AppList> lists) {
+  String _encodeLists(List<AppList> lists) {
     final encoded = lists.map((list) => list.toJson()).toList();
     return jsonEncode(encoded);
   }
@@ -326,9 +319,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   _textFieldController.clear();
                 });
                 _persistLists();
-                _listPageKey.currentState?.insertList(
-                  _activeLists.length - 1,
-                );
+                _listPageKey.currentState?.insertList(_activeLists.length - 1);
                 Navigator.of(context).pop();
               },
             ),
@@ -446,10 +437,7 @@ class _MyHomePageState extends State<MyHomePage> {
         layoutBuilder: (currentChild, previousChildren) {
           return Stack(
             alignment: Alignment.bottomRight,
-            children: [
-              ...previousChildren,
-              if (currentChild != null) currentChild,
-            ],
+            children: [...previousChildren, ?currentChild],
           );
         },
         child: _isListSelectionMode
